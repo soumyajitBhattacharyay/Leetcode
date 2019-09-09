@@ -1,0 +1,81 @@
+Approach for 1052. Grumpy Bookstore Owner
+
+******************************************************************************************************************************
+*************************************************** Problem Detailed Approach ************************************************
+******************************************************************************************************************************
+
+Here, we will use the most basic approach of sliding window to determine the optimal time for the grumpy book store owner 
+to remain happy so that, maximum number of customers can be satisfied.
+
+As said in the problem, when the book store owner is grumpy, the customers will be unsatisfied and when the owner is not
+grumpy, the customers will be satisfied. The bookstore owner knows a secret technique to keep themselves not grumpy for X 
+minutes straight, but can only use it once. The problem stems around finding the maimum number of dissatisfied customers
+in any X minute range (As we will use the bookstore owners power to keep themselves not grumpy for X minute straight resulting
+in making all the hitherto dissatisfied customers satisfied.) and then add that value to the total number of already satisfied 
+customers. To calculate that, first we can simply add all the customer counts when the bookstore owner is not grumpy, since 
+for those times, the customer will always be satisfied. Simultaneously, we will convert the specific indexes in the customer 
+array to 0, as their contribution is not required for calculating the highest number of dissatified customers in any X minute
+range.
+
+Post this step, we can maintain a sliding window of length X(denoting X minute range where the bookstore owner with their power
+will become no grumpy), and add the customers to calculate the maximum count of customers in the modified array. We will add t
+he resultant count to the sum of satisfied customers calculated above which will yield the desired result.
+
+******************************************************************************************************************************
+***************************************************** The Code in JAVA *******************************************************
+******************************************************************************************************************************
+
+class Solution {
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+        int sum = 0;
+        int len = customers.length;
+        int count = 0;
+        //Calculating the number of satisfied customers. 
+        //Converting their value to zero as they are no longer required to find the maximum unsatisfied customer 
+        //count in the range of X minutes.
+        for(int i =0; i < len; i++) {
+            if(grumpy[i] == 0) {
+                sum += customers[i];
+                customers[i] = 0;
+            }
+        }
+        int max = 0;
+        for(int i = 0; i < X; i++) {
+            max += customers[i];
+        }
+        int l = 0;
+        int k = X;
+        count = max;
+        //Using sliding window technique to Calculate count of unsatisfied customers in X minutue ranges.
+        //Note, since we have already converted the happy customers to zero in the input array, 
+        //we can directly add the values here.
+        while(k < len) {
+            count -= customers[l];
+            count+= customers[k];
+            //Computing the max of unsatisfied customer in X minute ranges.
+            if(max < count) {
+                max = count;
+            }
+            k++;
+            l++;
+        }
+        //Final result is the summation of 
+        //total number of already satisfied customers + the max unsatisfied customer in any X minute range.
+        return sum + max;
+    }
+}
+
+******************************************************************************************************************************
+**************************************************** Complexity Analysis *****************************************************
+******************************************************************************************************************************
+
+The Time Complexity:
+Since we are traversing the array sequentially once to calculate the sum of already satisfied customers and traversing it
+againg to compute the max unsatisfied cusomer in any X minute range, the time complexity is O(2*N) ~ O(N) where N is the size
+of the input array.
+
+The Space Complexity:
+Since we are only using some variables for storing the max value and the count, the space complexity is O(1). That is, the 
+code will run in Constant space complexity.
+
+Overall, the code runs in O(N) time and O(1) space.
